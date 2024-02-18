@@ -1,7 +1,6 @@
 package com.example.workingwithfragments
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,7 +11,6 @@ import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -51,25 +49,20 @@ class ShortWeatherFragment : Fragment() {
     private suspend fun loadWeather(): WeatherData? {
         val API_KEY = "afd3f31c472731bed0074b6a14cbf7f1"
         val weatherURL = "https://api.openweathermap.org/data/2.5/weather?q=Irkutsk&appid=$API_KEY&units=metric"
-        try {
+        return try {
             val stream = URL(weatherURL).openStream()
 
             // JSON отдаётся одной строкой,
             val data = stream.bufferedReader().use { it.readText() }
 
             val gson = Gson()
-            val weatherData = gson.fromJson(data, WeatherData::class.java)
 
-
-            // TODO: предусмотреть обработку ошибок (нет сети, пустой ответ)
-            Log.d("GGGGGGGGGGGGGGGGGGGGGGGGG", data)
-            Log.d("HHHHHHHHHHHHHHHHHHHHHHH", weatherData.toString())
-            return weatherData
+            gson.fromJson(data, WeatherData::class.java)
 
         } catch (e: IOException) {
             // Обработка ошибок при работе с сетью
             e.printStackTrace()
-            return null
+            null
         }
 
 
@@ -85,10 +78,6 @@ class ShortWeatherFragment : Fragment() {
                     Picasso.get().load(iconWeatherURL).into(imageView)
                     descriptionWeather.text = weatherData?.weather?.getOrNull(0)?.description ?: "miss"
                     temp.text = weatherData?.main?.temp?.toString() ?: "miss"
-                } else {
-                    imageView.setImageResource(R.drawable.ic_launcher_foreground)
-                    descriptionWeather.text = "miss"
-                    temp.text = "miss"
                 }
             }
         }

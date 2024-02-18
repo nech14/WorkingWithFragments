@@ -34,38 +34,4 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-
-    suspend fun loadWeather() {
-        val API_KEY = "afd3f31c472731bed0074b6a14cbf7f1"
-        val weatherURL = "https://api.openweathermap.org/data/2.5/weather?q=Irkutsk&appid=$API_KEY&units=metric"
-        try {
-            val stream = URL(weatherURL).openStream()
-
-            // JSON отдаётся одной строкой,
-            val data = stream.bufferedReader().use { it.readText() }
-
-            val gson = Gson()
-            val weatherData = gson.fromJson(data, WeatherData::class.java)
-
-            // TODO: предусмотреть обработку ошибок (нет сети, пустой ответ)
-            Log.d("GGGGGGGGGGGGGGGGGGGGGGGGG", data)
-            Log.d("HHHHHHHHHHHHHHHHHHHHHHH", weatherData.toString())
-
-        } catch (e: IOException) {
-            // Обработка ошибок при работе с сетью
-            e.printStackTrace()
-        }
-
-
-    }
-
-
-
-    public fun onClick(v: View) {
-
-        // Используем IO-диспетчер вместо Main (основного потока)
-        CoroutineScope(Dispatchers.IO).launch {
-            loadWeather()
-        }
-    }
 }
